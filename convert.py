@@ -12,7 +12,30 @@ import os
 from os import walk, getcwd
 from PIL import Image
 
-classes = ["stopsign"]
+classes = ["exitsign"]
+
+def upscale(from_size, to_size, box):
+    # upscale box to size of picture
+    
+    new_box = []
+
+    fw = from_size[0]
+    fh = from_size[1]
+    tw = to_size[0]
+    th = to_size[1]
+
+    xmin = box[0]
+    ymin = box[1]
+    xmax = box[2]
+    ymax = box[3]
+
+    new_box.append( xmin * (tw / fw) )
+    new_box.append( ymin * (th / fh) )
+    new_box.append( xmax * (tw / fw) )
+    new_box.append( ymax * (th / fh) )
+
+    return new_box
+
 
 def convert(size, box):
     dw = 1./size[0]
@@ -31,73 +54,73 @@ def convert(size, box):
 """-------------------------------------------------------------------""" 
 
 """ Configure Paths"""   
-mypath = "labels/stopsign_original/"
-outpath = "labels/stopsign/"
+in_path = "/run/media/sean/SEANHDD/HackWIT/Labels/"
+out_path = "/run/media/sean/SEANHDD/HackWIT/ConvertedLabels/"
+img_base_path = "/run/media/sean/SEANHDD/HackWIT/Images/"
 
-cls = "stopsign"
+cls = "exitsign"
 if cls not in classes:
     exit(0)
 cls_id = classes.index(cls)
 
 wd = getcwd()
-list_file = open('%s/%s_list.txt'%(wd, cls), 'w')
+list_file = open('%s/%s_list.txt'%(wd, cls), 'w+')
 
 """ Get input text file list """
 txt_name_list = []
-for (dirpath, dirnames, filenames) in walk(mypath):
+for (dirpath, dirnames, filenames) in walk(in_path):
     txt_name_list.extend(filenames)
     break
-print(txt_name_list)
+# print(txt_name_list)
 
 """ Process """
 for txt_name in txt_name_list:
-    # txt_file =  open("Labels/stop_sign/001.txt", "r")
     
     """ Open input text files """
-    txt_path = mypath + txt_name
+    txt_path = in_path + txt_name
     print("Input:" + txt_path)
     txt_file = open(txt_path, "r")
-    lines = txt_file.read().split('\r\n')   #for ubuntu, use "\r\n" instead of "\n"
+    lines = txt_file.read().split('\n') # for ubuntu, use "\r\n" instead of "\n"
     
     """ Open output text files """
-    txt_outpath = outpath + txt_name
-    print("Output:" + txt_outpath)
-    txt_outfile = open(txt_outpath, "w")
-    
+    txt_out_path = out_path + txt_name
+    print("Output:" + txt_out_path)
+    txt_outfile = open(txt_out_path, "w+")
     
     """ Convert the data to YOLO format """
     ct = 0
     for line in lines:
-        #print('lenth of line is: ')
-        #print(len(line))
-        #print('\n')
         if(len(line) >= 2):
             ct = ct + 1
-            print(line + "\n")
+            print(line)
             elems = line.split(' ')
             print(elems)
             xmin = elems[0]
             xmax = elems[2]
             ymin = elems[1]
             ymax = elems[3]
-            #
-            img_path = str('%s/images/%s/%s.JPEG'%(wd, cls, os.path.splitext(txt_name)[0]))
-            #t = magic.from_file(img_path)
-            #wh= re.search('(\d+) x (\d+)', t).groups()
-            im=Image.open(img_path)
-            w= int(im.size[0])
-            h= int(im.size[1])
-            #w = int(xmax) - int(xmin)
-            #h = int(ymax) - int(ymin)
-            # print(xmin)
+            
+            img_path = str('%s%s.jpeg'%(img_base_path, os.path.splitext(txt_name)[0]))
+            print(img_path)
+
+            # get size of image
+            im =Image.open(img_path)
+            w = int(im.size[0])
+            h = int(im.size[1])
             print(w, h)
+
+            # create box
             b = (float(xmin), float(xmax), float(ymin), float(ymax))
-            bb = convert((w,h), b)
+
+            # upscale and convert bounding box
+            bb = convert((w, h), upscale((480, 640), (w, h), b))
             print(bb)
+
+            # write new box to converted labels
             txt_outfile.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
 
     """ Save those images with bb into list"""
     if(ct != 0):
-        list_file.write('%s/images/%s/%s.JPEG\n'%(wd, cls, os.path.splitext(txt_name)[0]))
+        list_file.write('%s%s.jpeg\n'%(img_base_path, os.path.splitext(txt_name)[0]))
                 
 list_file.close()       
