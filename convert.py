@@ -25,13 +25,13 @@ def upscale(from_size, to_size, box):
     th = to_size[1]
 
     xmin = box[0]
-    ymin = box[1]
-    xmax = box[2]
+    xmax = box[1]
+    ymin = box[2]
     ymax = box[3]
 
     new_box.append( xmin * (tw / fw) )
-    new_box.append( ymin * (th / fh) )
     new_box.append( xmax * (tw / fw) )
+    new_box.append( ymin * (th / fh) )
     new_box.append( ymax * (th / fh) )
 
     return new_box

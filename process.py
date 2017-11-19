@@ -1,7 +1,10 @@
 import glob, os
 
-# Current directory
+# picture directory
 picture_dir = "/run/media/sean/SEANHDD/HackWIT/Images/"
+
+# labels directory
+label_dir = "/run/media/sean/SEANHDD/HackWIT/ConvertedLabels/"
 
 # Directory where the data will reside, relative to 'darknet.exe'
 path_data = 'data/obj/'
@@ -16,8 +19,14 @@ file_test = open('test.txt', 'w')
 # Populate train.txt and test.txt
 counter = 1  
 index_test = round(100 / percentage_test)  
-for pathAndFilename in glob.iglob(os.path.join(picture_dir, "*.jpeg")):  
+for pathAndFilename in glob.iglob(os.path.join(label_dir, "*.txt")):  
     title, ext = os.path.splitext(os.path.basename(pathAndFilename))
+
+    with open(label_dir + title + '.txt', 'r') as myfile:
+        data=myfile.read().replace('\n', '')
+
+        if not data:
+            continue
 
     if counter == index_test:
         counter = 1
