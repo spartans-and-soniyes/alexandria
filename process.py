@@ -7,7 +7,7 @@ picture_dir = "/run/media/sean/SEANHDD/HackWIT/Images/"
 label_dir = "/run/media/sean/SEANHDD/HackWIT/ConvertedLabels/"
 
 # Directory where the data will reside, relative to 'darknet.exe'
-path_data = './ExitSigns/JPEGImages/'
+path_data = '/home/sean/Documents/hackwit/darknet/ExitSigns/JPEGImages/'
 
 # Percentage of images to be used for the test set
 percentage_test = 25;
