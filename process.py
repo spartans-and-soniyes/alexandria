@@ -7,7 +7,7 @@ picture_dir = "/run/media/sean/SEANHDD/HackWIT/Images/"
 label_dir = "/run/media/sean/SEANHDD/HackWIT/ConvertedLabels/"
 
 # Directory where the data will reside, relative to 'darknet.exe'
-path_data = 'data/obj/'
+path_data = './ExitSigns/JPEGImages/'
 
 # Percentage of images to be used for the test set
 percentage_test = 25;
@@ -34,3 +34,6 @@ for pathAndFilename in glob.iglob(os.path.join(label_dir, "*.txt")):
     else:
         file_train.write(path_data + title + '.jpeg' + "\n")
         counter = counter + 1
+
+file_train.close()
+file_test.close()
