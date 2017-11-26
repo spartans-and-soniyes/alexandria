@@ -2,4 +2,4 @@
 ./darknet detector train data/obj.data yolo-obj.cfg darknet19_448.conv.23
 
 # tiny yolo
-./darknet detector train data/obj.data tiny-yolo-obj.cfg darknet19_448.conv.23
+./darknet detector train data/obj-tiny.data tiny-yolo-obj.cfg darknet19_448.conv.23
